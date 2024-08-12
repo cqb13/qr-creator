@@ -6,8 +6,8 @@ use super::{EncodingMode, ErrorCorrectionLevel, Version};
  * based on https://www.thonky.com/qr-code-tutorial/character-capacities
  */
 pub fn determine_optimal_qr_code_version(
-    encoding_mode: EncodingMode,
-    error_correction_level: ErrorCorrectionLevel,
+    encoding_mode: &EncodingMode,
+    error_correction_level: &ErrorCorrectionLevel,
     character_count: i32,
 ) -> Result<Version, &'static str> {
     let version_limits: &[i32] = match (encoding_mode, error_correction_level) {
