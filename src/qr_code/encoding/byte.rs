@@ -11,8 +11,8 @@
 * Step 3:
 * convert each byte into an 8-bit binary string, pad to the left with zeros if neeeded
 */
-pub fn byte_encoding(data: &str) -> Result<Vec<String>, String> {
-    let mut bits: Vec<String> = Vec::new();
+pub fn byte_encoding(data: &str) -> Result<String, String> {
+    let mut bits: String = String::new();
 
     for char in data.chars() {
         let string = char.to_string();
@@ -21,7 +21,7 @@ pub fn byte_encoding(data: &str) -> Result<Vec<String>, String> {
 
         let binary_bits = convert_to_binary_from_hex(&byte);
 
-        bits.push(binary_bits);
+        bits = bits + &binary_bits;
     }
 
     Ok(bits)

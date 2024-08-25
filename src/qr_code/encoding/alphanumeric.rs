@@ -29,7 +29,7 @@ use std::collections::HashMap;
 * if encoding an odd number of characters, as we are here, take the number representation of the
 * final character and convert it into a 6-bit binary string.
 */
-pub fn alphanumeric_encoding(data: &str) -> Result<Vec<String>, String> {
+pub fn alphanumeric_encoding(data: &str) -> Result<String, String> {
     let alphanumeric_values: HashMap<&str, i32> = [
         ("0", 0),
         ("1", 1),
@@ -88,7 +88,7 @@ pub fn alphanumeric_encoding(data: &str) -> Result<Vec<String>, String> {
         .map(|c| c.iter().collect::<String>())
         .collect::<Vec<String>>();
 
-    let mut bits: Vec<String> = Vec::new();
+    let mut bits: String = String::new();
 
     for group in grouped_data {
         let first_letter = group.chars().nth(0).unwrap().to_string();
@@ -111,13 +111,13 @@ pub fn alphanumeric_encoding(data: &str) -> Result<Vec<String>, String> {
 
                 let value = left_pad(format!("{:b}", total), 11, "0");
 
-                bits.push(value);
+                bits = bits + &value;
             }
             None => {
                 // triggers on the last group when encoding an odd number of characters
                 let value = left_pad(format!("{:b}", first_number / 45), 6, "0");
 
-                bits.push(value);
+                bits = bits + &value;
             }
         }
     }

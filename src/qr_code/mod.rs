@@ -96,7 +96,7 @@ impl QrCode {
             Err(err) => return Err(err),
         };
 
-        println!("{:?}", encoded_data);
+        println!("{}", encoded_data);
 
         Ok(QrCode {
             encoding_mode,

@@ -1,3 +1,5 @@
+use std::task::Wake;
+
 /**
 * 8675309
 *
@@ -13,11 +15,11 @@
 * if there are 2 zeros at the start of a group it should be interpreted as a 1 digit number and converted in to 4 binary bits
 * conditions above also apply to to the last group if it is 1 or 2 digits long
 *
-* 867 → 1101100011
-* 530 → 1000010010
-* 9 → 1001
+* 867 -> 1101100011
+* 530 -> 1000010010
+* 9 -> 1001
 */
-pub fn numeric_encoding(data: &str) -> Result<Vec<String>, String> {
+pub fn numeric_encoding(data: &str) -> Result<String, String> {
     let grouped_data = data
         .chars()
         .collect::<Vec<char>>()
@@ -25,7 +27,7 @@ pub fn numeric_encoding(data: &str) -> Result<Vec<String>, String> {
         .map(|c| c.iter().collect::<String>())
         .collect::<Vec<String>>();
 
-    let mut bits: Vec<String> = Vec::new();
+    let mut bits: String = String::new();
 
     for group in grouped_data {
         let number = match group.parse::<i32>() {
@@ -35,7 +37,7 @@ pub fn numeric_encoding(data: &str) -> Result<Vec<String>, String> {
 
         let value = format!("{:b}", number);
 
-        bits.push(value)
+        bits = bits + &value
     }
 
     Ok(bits)
