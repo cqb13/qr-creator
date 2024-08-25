@@ -1,6 +1,9 @@
+mod character_count;
 pub mod encoding;
+mod utils;
 pub mod version;
 
+use character_count::create_character_count_indicator;
 use encoding::encode;
 use version::determine_optimal_qr_code_version;
 
@@ -11,12 +14,13 @@ pub enum EncodingMode {
 }
 
 impl EncodingMode {
-    pub fn to_bits(&self) -> Vec<u8> {
+    pub fn to_bits(&self) -> String {
         match self {
-            EncodingMode::Numeric => vec![0, 0, 0, 1],
-            EncodingMode::Alphanumeric => vec![0, 0, 1, 0],
-            EncodingMode::Byte => vec![0, 1, 0, 0],
+            EncodingMode::Numeric => "0001",
+            EncodingMode::Alphanumeric => "0010",
+            EncodingMode::Byte => "0100",
         }
+        .to_string()
     }
 
     pub fn to_string(&self) -> String {
@@ -59,6 +63,12 @@ impl Version {
         }
     }
 
+    pub fn version(&self) -> i16 {
+        match self {
+            Version::Normal(version) => version.to_owned(),
+        }
+    }
+
     pub fn to_string(&self) -> String {
         match self {
             Version::Normal(version) => format!("Version {}", version),
@@ -71,6 +81,8 @@ pub struct QrCode {
     pub error_correction_level: ErrorCorrectionLevel,
     pub version: Version,
     pub data: String,
+    character_count_indicator: String,
+    pub encoded_data: String,
 }
 
 impl QrCode {
@@ -93,6 +105,11 @@ impl QrCode {
             Err(err) => return Err(err),
         };
 
+        let character_count_indicator =
+            create_character_count_indicator(&data, &encoding_mode, &version);
+
+        println!("{}", encoding_mode.to_bits());
+        println!("{}", character_count_indicator);
         println!("{}", encoded_data);
 
         Ok(QrCode {
@@ -100,6 +117,8 @@ impl QrCode {
             error_correction_level,
             version,
             data,
+            character_count_indicator,
+            encoded_data,
         })
     }
 

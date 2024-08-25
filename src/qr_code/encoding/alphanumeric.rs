@@ -1,3 +1,4 @@
+use crate::qr_code::utils::left_pad;
 use std::collections::HashMap;
 
 /**
@@ -123,14 +124,4 @@ pub fn alphanumeric_encoding(data: &str) -> Result<String, String> {
     }
 
     Ok(bits)
-}
-
-fn left_pad(string: String, length: i32, char: &str) -> String {
-    let mut padded = string;
-
-    while length > padded.len() as i32 {
-        padded = format!("{}{}", char, padded);
-    }
-
-    padded
 }
