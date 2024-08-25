@@ -1,3 +1,7 @@
+use std::borrow::Cow;
+
+use encoding_rs::SHIFT_JIS;
+
 /**
 * Kanji mode can only encode double-byte Shift JIS characters whose bytes are in the ranges 0x8140 to 0x9FFC and 0xE040 to 0xEBBF (hexadecimal)
 *
@@ -68,5 +72,48 @@
 pub fn kanji_encoding(data: &str) -> Result<String, String> {
     let mut bits: String = String::new();
 
+    for char in data.chars() {
+        let string = char.to_string();
+
+        let decoded = SHIFT_JIS.encode(&string);
+
+        if decoded.0.len() != 2 {
+            return Err(format!(
+                "Kanji character {} could not be encoded properly",
+                char
+            ));
+        }
+
+        let byte_pair = (decoded.0[0] as u16) << 8 | decoded.0[1] as u16;
+
+        let method_result = if (0x8140..=0x9FFC).contains(&byte_pair) {
+            method_one(byte_pair)
+        } else if (0xE040..=0xEBBF).contains(&byte_pair) {
+            method_two(byte_pair)
+        } else {
+            return Err(format!(
+                "Kanji character {} is not in valid range for Kanji encoding",
+                char
+            ));
+        };
+
+        let binary = format!("{:013b}", method_result);
+        bits.push_str(&binary);
+    }
+
     Ok(bits)
+}
+
+fn method_one(bytes: u16) -> u16 {
+    let adjusted = bytes - 0x8140;
+    let msb = (adjusted & 0xFF00) >> 8;
+    let lsb = adjusted & 0x00FF;
+    (msb * 0xC0) + lsb
+}
+
+fn method_two(bytes: u16) -> u16 {
+    let adjusted = bytes - 0xC140;
+    let msb = (adjusted & 0xFF00) >> 8;
+    let lsb = adjusted & 0x00FF;
+    (msb * 0xC0) + lsb
 }
