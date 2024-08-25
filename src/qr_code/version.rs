@@ -9,7 +9,7 @@ pub fn determine_optimal_qr_code_version(
     encoding_mode: &EncodingMode,
     error_correction_level: &ErrorCorrectionLevel,
     character_count: i32,
-) -> Result<Version, &'static str> {
+) -> Result<Version, String> {
     let version_limits: &[i32] = match (encoding_mode, error_correction_level) {
         (EncodingMode::Numeric, ErrorCorrectionLevel::Low) => &[
             41, 77, 127, 187, 255, 322, 370, 461, 552, 652, 772, 883, 1022, 1101, 1250, 1408, 1548,
@@ -99,5 +99,5 @@ pub fn determine_optimal_qr_code_version(
         }
     }
 
-    Err("Data is too large, no version found")
+    Err("Data is too large, no version found".to_string())
 }

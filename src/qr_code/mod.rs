@@ -1,5 +1,7 @@
+pub mod encoding;
 pub mod version;
 
+use encoding::encode;
 use version::determine_optimal_qr_code_version;
 
 pub enum EncodingMode {
@@ -79,7 +81,7 @@ impl QrCode {
         data: String,
         encoding_mode: EncodingMode,
         error_correction_level: ErrorCorrectionLevel,
-    ) -> Result<QrCode, &'static str> {
+    ) -> Result<QrCode, String> {
         let version = match determine_optimal_qr_code_version(
             &encoding_mode,
             &error_correction_level,
@@ -88,6 +90,13 @@ impl QrCode {
             Ok(version) => version,
             Err(err) => return Err(err),
         };
+
+        let encoded_data = match encode(&data, &encoding_mode) {
+            Ok(encoded_data) => encoded_data,
+            Err(err) => return Err(err),
+        };
+
+        println!("{:?}", encoded_data);
 
         Ok(QrCode {
             encoding_mode,
