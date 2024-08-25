@@ -8,7 +8,6 @@ pub enum EncodingMode {
     Numeric,
     Alphanumeric,
     Byte,
-    Kanji,
 }
 
 impl EncodingMode {
@@ -17,7 +16,6 @@ impl EncodingMode {
             EncodingMode::Numeric => vec![0, 0, 0, 1],
             EncodingMode::Alphanumeric => vec![0, 0, 1, 0],
             EncodingMode::Byte => vec![0, 1, 0, 0],
-            EncodingMode::Kanji => vec![1, 0, 0, 0],
         }
     }
 
@@ -26,7 +24,6 @@ impl EncodingMode {
             EncodingMode::Numeric => "Numeric",
             EncodingMode::Alphanumeric => "Alphanumeric",
             EncodingMode::Byte => "Byte",
-            EncodingMode::Kanji => "Kanji",
         }
         .to_string()
     }
