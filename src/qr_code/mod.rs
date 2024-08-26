@@ -3,9 +3,11 @@ pub mod encoding;
 mod utils;
 pub mod version;
 
+use std::ops::BitOrAssign;
+
 use character_count::create_character_count_indicator;
 use encoding::encode;
-use version::determine_optimal_qr_code_version;
+use version::{determine_data_bits_required_for_version, determine_optimal_qr_code_version};
 
 pub enum EncodingMode {
     Numeric,
@@ -81,7 +83,6 @@ pub struct QrCode {
     pub error_correction_level: ErrorCorrectionLevel,
     pub version: Version,
     pub data: String,
-    character_count_indicator: String,
     pub encoded_data: String,
 }
 
@@ -108,16 +109,24 @@ impl QrCode {
         let character_count_indicator =
             create_character_count_indicator(&data, &encoding_mode, &version);
 
-        println!("{}", encoding_mode.to_bits());
-        println!("{}", character_count_indicator);
-        println!("{}", encoded_data);
+        let data_bits_required_for_version =
+            match determine_data_bits_required_for_version(&version, &error_correction_level) {
+                Ok(data_bits_required_for_version) => data_bits_required_for_version,
+                Err(err) => return Err(err),
+            };
+
+        construct_data(
+            encoding_mode.to_bits(),
+            &character_count_indicator,
+            &encoded_data,
+            data_bits_required_for_version,
+        );
 
         Ok(QrCode {
             encoding_mode,
             error_correction_level,
             version,
             data,
-            character_count_indicator,
             encoded_data,
         })
     }
@@ -132,5 +141,29 @@ impl QrCode {
             "Error Correction Level: {}",
             self.error_correction_level.to_string()
         );
+    }
+}
+
+fn construct_data(
+    encoding_mode_bits: String,
+    character_count_indicator_bits: &str,
+    encoded_data_bits: &str,
+    data_bits_required_for_version: i32,
+) {
+    let mut bits = format!(
+        "{}{}{}",
+        encoding_mode_bits, character_count_indicator_bits, encoded_data_bits
+    );
+
+    if bits.len() > data_bits_required_for_version as usize {
+        //TODO: return err here
+    }
+
+    if bits.len() + 4 != data_bits_required_for_version as usize {
+        bits += "0000";
+    } else {
+        while bits.len() != data_bits_required_for_version as usize {
+            bits += "0";
+        }
     }
 }
