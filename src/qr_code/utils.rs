@@ -1,8 +1,18 @@
-pub fn left_pad(string: String, length: i32, char: &str) -> String {
-    let mut padded = string;
+pub fn left_pad(string: &str, length: i32, char: &str) -> String {
+    let mut padded = string.to_string();
 
     while length > padded.len() as i32 {
         padded = format!("{}{}", char, padded);
+    }
+
+    padded
+}
+
+pub fn right_pad(string: &str, length: i32, char: &str) -> String {
+    let mut padded = string.to_string();
+
+    while length > padded.len() as i32 {
+        padded += char;
     }
 
     padded

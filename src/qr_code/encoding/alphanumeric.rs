@@ -110,13 +110,13 @@ pub fn alphanumeric_encoding(data: &str) -> Result<String, String> {
 
                 let total = first_number + second_number;
 
-                let value = left_pad(format!("{:b}", total), 11, "0");
+                let value = left_pad(&format!("{:b}", total), 11, "0");
 
                 bits = bits + &value;
             }
             None => {
                 // triggers on the last group when encoding an odd number of characters
-                let value = left_pad(format!("{:b}", first_number / 45), 6, "0");
+                let value = left_pad(&format!("{:b}", first_number / 45), 6, "0");
 
                 bits = bits + &value;
             }

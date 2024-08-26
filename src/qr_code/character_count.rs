@@ -13,7 +13,7 @@ pub fn create_character_count_indicator(
     let hex = format!("{:02X?}", count);
 
     let binary = left_pad(
-        convert_hex_to_binary(&hex),
+        &convert_hex_to_binary(&hex),
         binary_indicator_bit_length,
         "0",
     );

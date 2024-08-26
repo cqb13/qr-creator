@@ -3,10 +3,9 @@ pub mod encoding;
 mod utils;
 pub mod version;
 
-use std::ops::BitOrAssign;
-
 use character_count::create_character_count_indicator;
 use encoding::encode;
+use utils::right_pad;
 use version::{determine_data_bits_required_for_version, determine_optimal_qr_code_version};
 
 pub enum EncodingMode {
@@ -115,12 +114,17 @@ impl QrCode {
                 Err(err) => return Err(err),
             };
 
-        construct_data(
+        let constructed_data = match construct_data(
             encoding_mode.to_bits(),
             &character_count_indicator,
             &encoded_data,
             data_bits_required_for_version,
-        );
+        ) {
+            Ok(construct_data) => construct_data,
+            Err(err) => return Err(err),
+        };
+
+        //TODO: error correction
 
         Ok(QrCode {
             encoding_mode,
@@ -149,21 +153,32 @@ fn construct_data(
     character_count_indicator_bits: &str,
     encoded_data_bits: &str,
     data_bits_required_for_version: i32,
-) {
+) -> Result<String, String> {
     let mut bits = format!(
         "{}{}{}",
         encoding_mode_bits, character_count_indicator_bits, encoded_data_bits
     );
 
     if bits.len() > data_bits_required_for_version as usize {
-        //TODO: return err here
+        return Err("Data bits are longer than what the QR Code can hold".to_string());
     }
 
+    // adding terminator bits
     if bits.len() + 4 != data_bits_required_for_version as usize {
         bits += "0000";
+
+        // making multiple of 8;
+        let len = bits.len() % 8;
+        let dif = 8 - len;
+
+        bits = right_pad(&bits, (dif + bits.len()) as i32, "0");
+
+        //TODO: add pad bits 11101100 00010001 until string reaches max length
     } else {
         while bits.len() != data_bits_required_for_version as usize {
             bits += "0";
         }
     }
+
+    Ok(bits)
 }
