@@ -187,6 +187,7 @@ fn construct_data(
             return Ok(bits);
         }
 
+        // TODO: improve this: required_len - current_len = x; x/8 = bytes_to_pad
         let pad_string_odd = "11101100";
         let pad_string_even = "00010001";
 
