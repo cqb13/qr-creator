@@ -124,6 +124,13 @@ impl QrCode {
             Err(err) => return Err(err),
         };
 
+        println!(
+            "req: {}, current: {}",
+            data_bits_required_for_version,
+            constructed_data.len()
+        );
+        println!("{}", constructed_data);
+
         //TODO: error correction
 
         Ok(QrCode {
@@ -167,13 +174,34 @@ fn construct_data(
     if bits.len() + 4 != data_bits_required_for_version as usize {
         bits += "0000";
 
+        if bits.len() == data_bits_required_for_version as usize {
+            return Ok(bits);
+        }
+
         // making multiple of 8;
         let len = bits.len() % 8;
         let dif = 8 - len;
 
         bits = right_pad(&bits, (dif + bits.len()) as i32, "0");
+        if bits.len() == data_bits_required_for_version as usize {
+            return Ok(bits);
+        }
 
-        //TODO: add pad bits 11101100 00010001 until string reaches max length
+        let pad_string_odd = "11101100";
+        let pad_string_even = "00010001";
+
+        while bits.len() != data_bits_required_for_version as usize {
+            bits += pad_string_odd;
+            if bits.len() == data_bits_required_for_version as usize {
+                return Ok(bits);
+            }
+
+            bits += pad_string_even;
+
+            if bits.len() == data_bits_required_for_version as usize {
+                return Ok(bits);
+            }
+        }
     } else {
         while bits.len() != data_bits_required_for_version as usize {
             bits += "0";
