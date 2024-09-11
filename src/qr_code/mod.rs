@@ -1,10 +1,12 @@
 mod character_count;
 pub mod encoding;
+mod error_correction;
 mod utils;
-pub mod version;
+mod version;
 
 use character_count::create_character_count_indicator;
 use encoding::encode;
+use error_correction::generate_error_correction;
 use utils::right_pad;
 use version::{determine_data_bits_required_for_version, determine_optimal_qr_code_version};
 
@@ -131,7 +133,13 @@ impl QrCode {
         );
         println!("{}", constructed_data);
 
-        //TODO: error correction
+        let constructed_data =
+            match generate_error_correction(constructed_data, &error_correction_level, &version) {
+                Ok(constructed_data) => constructed_data,
+                Err(err) => return Err(err),
+            };
+
+        println!("{}", constructed_data);
 
         Ok(QrCode {
             encoding_mode,
