@@ -1,5 +1,5 @@
 use super::{EncodingMode, ErrorCorrectionLevel, Version};
-
+//TODO: fix the values in the table
 /**
  * Determines the smallest QR code version based on the EncodingMode, ErrorCorrectionLevel, and character count.
  *
@@ -28,13 +28,13 @@ pub fn determine_optimal_qr_code_version(
         ],
         (EncodingMode::Numeric, ErrorCorrectionLevel::High) => &[
             17, 34, 58, 82, 106, 139, 154, 202, 235, 288, 331, 374, 427, 468, 530, 602, 674, 746,
-            813, 919, 969, 1056, 1108, 1228, 1286, 1425, 1501, 1581, 1689, 1772, 1880, 1980, 2091,
-            2216, 2331, 2416, 2534, 2677, 2809, 2953,
+            813, 919, 969, 1056, 1108, 1228, 1286, 1425, 1501, 1581, 1677, 1782, 1897, 2022, 2157,
+            2301, 2361, 2524, 2625, 2735, 2927, 3057,
         ],
         (EncodingMode::Alphanumeric, ErrorCorrectionLevel::Low) => &[
             25, 47, 77, 114, 154, 195, 224, 279, 335, 395, 468, 535, 619, 667, 758, 854, 938, 1046,
-            1153, 1249, 1352, 1460, 1588, 1718, 1804, 1933, 2085, 2181, 2358, 2473, 2670, 2805,
-            2949, 3081, 3244, 3417, 3599, 3791, 3993, 4200, 4417,
+            1153, 1249, 1352, 1460, 1588, 1704, 1853, 1990, 2132, 2223, 2369, 2520, 2677, 2840,
+            3009, 3183, 3351, 3537, 3729, 3927, 4087, 4296,
         ],
         (EncodingMode::Alphanumeric, ErrorCorrectionLevel::Medium) => &[
             20, 38, 61, 90, 122, 154, 178, 221, 262, 311, 366, 419, 483, 528, 600, 656, 734, 816,

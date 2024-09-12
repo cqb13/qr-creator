@@ -117,7 +117,7 @@ impl QrCode {
             };
 
         let constructed_data = match construct_data(
-            encoding_mode.to_bits(),
+            &encoding_mode.to_bits(),
             &character_count_indicator,
             &encoded_data,
             data_bits_required_for_version,
@@ -126,20 +126,11 @@ impl QrCode {
             Err(err) => return Err(err),
         };
 
-        println!(
-            "req: {}, current: {}",
-            data_bits_required_for_version,
-            constructed_data.len()
-        );
-        println!("{}", constructed_data);
-
         let constructed_data =
             match generate_error_correction(constructed_data, &error_correction_level, &version) {
                 Ok(constructed_data) => constructed_data,
                 Err(err) => return Err(err),
             };
-
-        println!("{}", constructed_data);
 
         Ok(QrCode {
             encoding_mode,
@@ -164,7 +155,7 @@ impl QrCode {
 }
 
 fn construct_data(
-    encoding_mode_bits: String,
+    encoding_mode_bits: &str,
     character_count_indicator_bits: &str,
     encoded_data_bits: &str,
     data_bits_required_for_version: i32,
@@ -216,6 +207,28 @@ fn construct_data(
             bits += "0";
         }
     }
-
     Ok(bits)
+}
+
+#[test]
+fn test_data_construct() {
+    let encoding_mode_bits = "0010";
+    let character_count_indicator_bits = "000001011";
+    let encoded_data_bits = "0110000101101111000110100010111001011011100010011010100001101";
+
+    let constructed_data = construct_data(
+        encoding_mode_bits,
+        character_count_indicator_bits,
+        encoded_data_bits,
+        104,
+    );
+
+    assert!(constructed_data.is_ok(), "Failed to construct data");
+
+    let constructed_data = constructed_data.unwrap();
+
+    assert_eq!(
+        constructed_data, "00100000010110110000101101111000110100010111001011011100010011010100001101000000111011000001000111101100",
+        "Construced data did not match expected result"
+    )
 }
