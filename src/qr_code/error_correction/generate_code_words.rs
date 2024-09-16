@@ -42,13 +42,27 @@ pub fn generate_code_words(
     error_correction_level: &ErrorCorrectionLevel,
     version: &Version,
 ) -> Result<ErrorCorrectionGroups, String> {
+    let byte_blocks = data_bits_to_byte_blocks(data_bits)?;
     let error_correction_group_config = get_group_layout(&error_correction_level, &version);
     let error_correction_groups = ErrorCorrectionGroups::new();
 
     Ok(error_correction_groups)
 }
 
-pub fn get_group_layout(
+fn data_bits_to_byte_blocks(data_bits: String) -> Result<Vec<String>, String> {
+    if data_bits.len() % 8 != 0 {
+        return Err("Failed to split bits into bytes".to_string());
+    }
+
+    let chunks: Vec<String> = (0..data_bits.len())
+        .step_by(8)
+        .map(|i| data_bits[i..i + 8].to_string())
+        .collect();
+
+    Ok(chunks)
+}
+
+fn get_group_layout(
     error_correction_level: &ErrorCorrectionLevel,
     version: &Version,
 ) -> Result<GroupConfig, String> {
